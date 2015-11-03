@@ -174,14 +174,16 @@ public class JiraService {
     }
 
     public boolean performTransition(String message, String issue, String comment) {
+        log.info("Performing Jira transition");
         Optional<String> optionalTransitionName = extractMatchingTransitionsFromMessage(message, issue);
 
         if(optionalTransitionName.isPresent()) {
+            log.info("Optional transition name is present");
             String transitionName = optionalTransitionName.get();
             Optional<Transition> optionalTransition = getTransition(issue, transitionName);
 
             if(optionalTransition.isPresent()) {
-                log.info("Performing transition <{}> for issue <{}>", transitionName, issue);
+                log.info("Performing transition <{}> for :issue <{}>", transitionName, issue);
                 TransitionInput.CommentWrapper commentWrapper =
                         new TransitionInput.CommentWrapper(new Comment(comment.replace(TRANSITION_HOLDER, transitionName)));
 
@@ -203,7 +205,9 @@ public class JiraService {
 
     public boolean isExistingIssue(String issue) {
         try {
-            return (getIssue(issue).code() == 200);
+            int code = getIssue(issue).code();
+            log.info("Founding issue {} and received code {}", issue, code);
+            return (code == 200);
         } catch (Exception e) {
             log.error("Unable to get issue <{}>", issue, e);
             return false;
