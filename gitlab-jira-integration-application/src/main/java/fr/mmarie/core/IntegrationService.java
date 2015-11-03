@@ -42,6 +42,7 @@ public class IntegrationService {
     }
 
     public String buildComment(User user, String repositoryName, Commit commit) {
+        log.info("buildComment");
         if(Strings.isNullOrEmpty(user.getUsername())) {
             return String.format("%s mentioned this issue in [a commit of %s|%s] \r\n "
                             + "*%s* : %s",
@@ -56,6 +57,7 @@ public class IntegrationService {
     }
 
     public String buildCommentForTransition(User user, String repositoryName, Commit commit) {
+        log.info("buildCommentForTransition");
         if(Strings.isNullOrEmpty(user.getUsername())) {
             return String.format("%s changed status of this issue in [a commit of %s|%s] to *%s* \r\n\r\n "
                             + "*%s* : %s",
@@ -72,6 +74,7 @@ public class IntegrationService {
     }
 
     public void commentIssue(String repositoryName, User user, Collection<Commit> commits, String issue) {
+        log.info("commentIssue");
         if(jiraService.isExistingIssue(issue)) {
             commits.forEach(commit -> {
                 if(!jiraService.isIssueAlreadyCommented(issue, commit.getId())) {
@@ -101,6 +104,7 @@ public class IntegrationService {
     }
 
     public void performPushEvent(Event event) {
+        log.info("performPushEvent");
         Preconditions.checkNotNull(event.getCommits(), "commits array can not be null");
         // For each commit, extract jira issues
         Multimap<String, Commit> jiraIssues = ArrayListMultimap.create();
@@ -116,6 +120,7 @@ public class IntegrationService {
     }
 
     public User getUser(Event event) {
+        log.info("getUser");
         try {
             Response<User> userResponse = gitLabService.getUser(event.getUserId());
             Preconditions.checkArgument(userResponse.code() == 200);

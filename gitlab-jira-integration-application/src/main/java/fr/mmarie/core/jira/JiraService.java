@@ -66,22 +66,27 @@ public class JiraService {
     }
 
     public Response<Object> getIssue(String issue) throws IOException {
+        log.info("getIssue");
         return jiraEndPoints.getIssue(issue).execute();
     }
 
     public Response<CommentResponse> getCommentsOfIssue(String issue) throws IOException {
+        log.info("getCommentsOfIssue");
         return jiraEndPoints.getCommentsOfIssue(issue).execute();
     }
 
     public Response<Comment> commentIssue(String issue, Comment comment) throws IOException {
+        log.info("commentIssue");
         return jiraEndPoints.commentIssue(issue, comment).execute();
     }
 
     public TransitionResponse getTransitionsOfIssue(String issue) {
+        log.info("getTransitionsOfIssue");
         return jiraEndPoints.getTransitionsOfIssue(issue).toBlocking().firstOrDefault(null);
     }
 
     public boolean transitionOnIssue(String issue, TransitionInput transitionInput) {
+        log.info("transitionOnIssue");
         try {
             Response<Void> response = jiraEndPoints.transitionsOnIssue(issue, transitionInput).execute();
             if(response.isSuccess()) {
@@ -108,6 +113,7 @@ public class JiraService {
     }
 
     public Response<Map<String, Object>> serverInfo() throws IOException {
+        log.info("serverInfo");
         return jiraEndPoints.serverInfo().execute();
     }
 
@@ -118,6 +124,7 @@ public class JiraService {
      * @return Matching issues name
      */
     public List<String> extractIssuesFromMessage(String message) {
+        log.info("extractIssuesFromMessage");
         List<String> issues = Lists.newArrayList();
 
         Matcher matcher = ISSUE_PATTERN.matcher(message);
@@ -136,6 +143,7 @@ public class JiraService {
      * @return Matching [ISSUE, TRANSITION]
      */
     public Map<String, String> extractMatchingTransitionsFromMessage(String message) {
+        log.info("extractMatchingTransitionsFromMessage");
         Map<String, String> matchingTransition = Maps.newHashMap();
 
         List<String> issues = extractIssuesFromMessage(message);
@@ -157,6 +165,7 @@ public class JiraService {
      * @return Matching transition if it exists
      */
     public Optional<String> extractMatchingTransitionsFromMessage(String message, String issue) {
+        log.info("extractMatchingTransitionsFromMessage");
         List<TransitionConfiguration> transitions = jiraConfiguration.getTransitions();
 
         for (TransitionConfiguration transition : transitions) {
@@ -204,6 +213,7 @@ public class JiraService {
     }
 
     public boolean isExistingIssue(String issue) {
+        log.info("isExistingIssue");
         try {
             int code = getIssue(issue).code();
             log.info("Founding issue {} and received code {}", issue, code);
@@ -215,6 +225,7 @@ public class JiraService {
     }
 
     public Optional<Transition> getTransition(String issue, String name) {
+        log.info("getTransition");
         return getTransitionsOfIssue(issue)
                 .getTransitions()
                 .stream()
@@ -223,10 +234,12 @@ public class JiraService {
     }
 
     public boolean isExistingTransition(String issue, String name) {
+        log.info("isExistingTransition");
         return getTransition(issue, name).isPresent();
     }
 
     public boolean isIssueAlreadyCommented(String issue, String commitId) {
+        log.info("isIssueAlreadyCommented");
         try {
             List<Comment> comments = getCommentsOfIssue(issue).body().getComments();
             return comments.stream().anyMatch(comment -> comment.getBody().contains(commitId));
